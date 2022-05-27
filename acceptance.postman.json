@@ -1,0 +1,64 @@
+{
+  "info": {
+    "name": "Simple AT on the TODO API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+    "description": "A sample collection to test the TODO API"
+  },
+
+  "item": [{
+    "name": "Create a new item",
+    "event": [{
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test('expect response be 200', function () {",
+          "    pm.response.to.be.ok",
+          "})",
+          "pm.test('expect response json contain id', function () {",
+          "    pm.expect(pm.response.json()).to.have.property('id')",
+          "})",
+          "pm.environment.set(\"id\", pm.response.json().id)"
+        ]
+      }
+    }],
+    "request": {
+      "url": "http://{{targetHost}}:8080/todos/add?item=text",
+      "method": "POST"
+    }
+  },{
+    "name": "Mark the item as done",
+    "event": [{
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test('expect response be 200', function () {",
+          "    pm.response.to.be.ok",
+          "})"
+        ]
+      }
+    }],
+    "request": {
+      "url": "http://{{targetHost}}:8080/todos/done?id={{id}}",
+      "method": "POST"
+    }
+  },{
+    "name": "Remove the item",
+    "event": [{
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test('expect response be 200', function () {",
+          "    pm.response.to.be.ok",
+          "})"
+        ]
+      }
+    }],
+    "request": {
+      "url": "http://{{targetHost}}:8080/todos/remove?id={{id}}",
+      "method": "POST"
+    }
+  }]
+}

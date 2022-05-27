@@ -1,0 +1,18 @@
+apiVersion: core.napptive.com/v1alpha1
+kind: ApplicationMetadata
+name: "Example App - NodeJS - Acceptance Test Runner"
+version: VERSION
+description: Acceptance test runner for the example-app-nodejs application
+keywords:
+  - "todo"
+  - "nodejs"
+  - "cicd"
+  - "qa"
+  - "acceptance-test"
+license: "Apache License Version 2.0"
+url: "https://napptive.com/"
+doc: "https://github.com/napptive/example-app-nodejs"
+logo:
+  - src: "https://storage.googleapis.com/artifacts.playground.napptive.dev/logos/napptive.png"
+    type: "image/png"
+    size: "75x87"

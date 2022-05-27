@@ -1,0 +1,30 @@
+name: Cleanup production environment
+# This workflow is intended to be executed manually.
+on: workflow_dispatch
+env:
+  PLAYGROUND_PAT: ${{ secrets.PLAYGROUND_PRODUCTION_PAT}} #TODO: Store your PAT in this secret, or point to the correct one if it has a different name.
+  PLAYGROUND_ACCOUNT_NAME: dhiguero #TODO: This should be your NAPPTIVE username.
+jobs:
+  delete-prod-app:
+    name: Delete the production application and its environment.
+    runs-on: ubuntu-latest
+    outputs:
+      envname: ${{ steps.envname.outputs.envname }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set environment name
+      id: envname
+      run: echo "::set-output name=envname::${PLAYGROUND_ACCOUNT_NAME}/todo-app-prod"
+    - name: Remove todo app
+      uses: napptive-actions/playground-github-action@v2.4.1
+      continue-on-error: true
+      with:
+        cmd: "apps remove example-app-nodejs"
+        environment: ${{steps.envname.outputs.envname}}
+        playgroundConfigFile: ./config/playground.yaml
+    - name: Delete production environment
+      uses: napptive-actions/playground-github-action@v2.4.1
+      continue-on-error: true
+      with:
+        cmd: "env delete ${{steps.envname.outputs.envname }}" 
+        playgroundConfigFile: ./config/playground.yaml

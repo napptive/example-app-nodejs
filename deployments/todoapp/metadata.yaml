@@ -1,0 +1,16 @@
+apiVersion: core.napptive.com/v1alpha1
+kind: ApplicationMetadata
+name: "Example App - NodeJS"
+version: VERSION
+description: Example application to illustrate the usage of the Napptive platform
+keywords:
+  - "todo"
+  - "nodejs"
+  - "cicd"
+license: "Apache License Version 2.0"
+url: "https://napptive.com/"
+doc: "https://github.com/napptive/example-app-nodejs"
+logo:
+  - src: "https://storage.googleapis.com/artifacts.playground.napptive.dev/logos/napptive.png"
+    type: "image/png"
+    size: "75x87"

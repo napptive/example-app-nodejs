@@ -1,0 +1,24 @@
+apiVersion: core.oam.dev/v1alpha2
+kind: ApplicationConfiguration
+metadata:
+  name: example-app-nodejs
+  annotations:
+    version: 0.0.1
+    description: "A simple application to illustrate CI/CD pipelines with the NAPPTIVE Playground"
+spec:
+  components:
+    - componentName: nodejs-api
+      traits:
+        - trait:
+            apiVersion: core.napptive.com/v1alpha1
+            kind: Ingress
+            metadata:
+              name: nodejs-api-ingress
+            spec:
+              name: nodejs-api
+              protocol: HTTP
+              port: 8080
+              path: /
+              rewritePath: /
+
+

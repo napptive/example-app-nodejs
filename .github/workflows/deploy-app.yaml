@@ -1,0 +1,213 @@
+name: Full CI/CD pipeline
+# Use this to this to launch the workflow manually.
+on: workflow_dispatch
+# Uncomment the following lines to execute the job automatically.
+#on:
+#  push:
+#    branches: [main]
+env:
+  PLAYGROUND_PAT: ${{ secrets.PLAYGROUND_PRODUCTION_PAT}} #TODO: Store your PAT in this secret, or point to the correct one if it has a different name.
+  TARGET_DOCKER_REGISTRY: napptive #TODO: This should be your docker hub account.
+  PLAYGROUND_ACCOUNT_NAME: dhiguero #TODO: This should be your NAPPTIVE username.
+jobs:
+  build:
+    name: Unit and Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '17'
+    - run: npm install
+    - run: npm test
+  upload-docker-revision:
+    needs: build
+    name: Push docker images
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Docker Login
+      uses: docker/login-action@v1
+      with:
+        username: ${{secrets.DOCKER_HUB_USER}}
+        password: ${{secrets.DOCKER_HUB_TOKEN}}
+    - name: Build and push Docker images
+      run: make docker-push
+  upload-app-def-revision:
+    needs: upload-docker-revision
+    name: Push the application definitions to the NAPPTIVE catalog
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Render Kubernetes OAM files
+      run: make k8s
+    - name: Get Version
+      id: version
+      run: echo "::set-output name=version::$(cat version)"
+    - name: Push the application to the catalog
+      uses: napptive-actions/catalog-push-action@v2.4.1
+      with:
+        applicationPath: ./build/k8s/todoapp
+        namespace: "napptive"
+        applicationName: "example-app-nodejs"
+        tag: ${{ steps.version.outputs.version }}
+    - name: Push the acceptance test runner to the catalog
+      uses: napptive-actions/catalog-push-action@v2.4.1
+      with:
+        applicationPath: ./build/k8s/todoat
+        namespace: "napptive"
+        applicationName: "example-app-nodejs-at"
+        tag: ${{ steps.version.outputs.version }}
+  prepare-acceptance-test-env:
+    needs: [upload-app-def-revision, upload-docker-revision]
+    name: Prepare the environment to launch AT
+    runs-on: ubuntu-latest
+    outputs:
+      envname: ${{ steps.envname.outputs.envname }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Get Version
+      id: version
+      run: echo "::set-output name=version::$(cat version)"
+    - name: Set environment name
+      id: envname
+      run: echo "::set-output name=envname::${PLAYGROUND_ACCOUNT_NAME}/todo-at-${GITHUB_RUN_ID}"
+    - name: Create test environment
+      uses: napptive-actions/playground-github-action@v2.4.1
+      with:
+        cmd: "env create ${{steps.envname.outputs.envname }}" 
+  launch-acceptance-tests:
+    needs: prepare-acceptance-test-env
+    name: Launch the acceptance tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Get Version
+      id: get-version
+      run: echo "::set-output name=version::$(cat version)"
+    - name: Deploy the TODO app from the catalog
+      uses: napptive-actions/catalog-deploy-action@v2.4.1
+      with:
+        appName: napptive/example-app-nodejs:${{ steps.get-version.outputs.version }}
+        environment: ${{needs.prepare-acceptance-test-env.outputs.envname}}
+    - name: Wait for TODO app
+      uses: napptive-actions/playground-github-action@v2.4.1
+      with:
+        cmd: "apps wait example-app-nodejs"
+        environment: ${{needs.prepare-acceptance-test-env.outputs.envname}}
+    - name: Deploy the TODO app AT runner from the catalog
+      uses: napptive-actions/catalog-deploy-action@v2.4.1
+      with:
+        appName: napptive/example-app-nodejs-at:${{ steps.get-version.outputs.version }}
+        environment: ${{needs.prepare-acceptance-test-env.outputs.envname}}
+    - name: Wait for the test runner
+      uses: napptive-actions/playground-github-action@v2.4.1
+      continue-on-error: true
+      id: wait-at
+      with:
+        cmd: "apps wait example-app-nodejs-at --logContains TEST_SUCCESS --timeout=30s"
+        environment: ${{needs.prepare-acceptance-test-env.outputs.envname}}
+    - name: AT success
+      id: at-success
+      run: echo '::set-output name=at-result::true'
+      if: steps.wait-at.outcome == 'success'
+    - name: AT failure
+      id: at-failure
+      run: echo '::set-output name=at-result::false'
+      if: steps.wait-at.outcome == 'failure'
+  cleanup-acceptance-test-env:
+    if: ${{ always() }}
+    needs: [prepare-acceptance-test-env, launch-acceptance-tests]
+    name: Cleanup acceptance test environment
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Remove todo app
+      uses: napptive-actions/playground-github-action@v2.4.1
+      continue-on-error: true
+      with:
+        cmd: "apps remove example-app-nodejs"
+        environment: ${{needs.prepare-acceptance-test-env.outputs.envname}}
+    - name: Remove AT app
+      uses: napptive-actions/playground-github-action@v2.4.1
+      continue-on-error: true
+      with:
+        cmd: "apps remove example-app-nodejs-at"
+        environment: ${{needs.prepare-acceptance-test-env.outputs.envname}}
+    - name: Cleanup test environment
+      uses: napptive-actions/playground-github-action@v2.4.1
+      continue-on-error: true
+      with:
+        cmd: "env remove ${{needs.prepare-acceptance-test-env.outputs.envname}}" 
+  create-prod-env:
+    needs: [launch-acceptance-tests]
+    name: Create the production environment
+    runs-on: ubuntu-latest
+    outputs:
+      envname: ${{ steps.envname.outputs.envname }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set environment name
+      id: envname
+      run: echo "::set-output name=envname::${PLAYGROUND_ACCOUNT_NAME}/todo-app-prod"
+    - name: Create production environment
+      uses: napptive-actions/playground-github-action@v2.4.1
+      continue-on-error: true
+      with:
+        cmd: "env create ${{steps.envname.outputs.envname }}" 
+  check-app-deployed:
+    needs: [create-prod-env]
+    name: Check if the application is deployed
+    runs-on: ubuntu-latest
+    outputs:
+      not-found: ${{ steps.not-found.outputs.not-found }}
+      found: ${{ steps.found.outputs.found }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Check if the app exists        
+      uses: napptive-actions/playground-github-action@v2.4.1
+      continue-on-error: true
+      id: check
+      with:
+        cmd: "apps info example-app-nodejs"
+        environment: ${{needs.create-prod-env.outputs.envname}}
+    - name: Set App not found
+      id: not-found
+      run: echo '::set-output name=not-found::true'
+      if: steps.check.outcome != 'success'
+    - name: Set App found
+      id: found
+      run: echo '::set-output name=found::true'
+      if: steps.check.outcome != 'failure'
+  deploy-app:
+    name: Deploy application into production
+    needs: [create-prod-env, check-app-deployed]
+    runs-on: ubuntu-latest
+    if: ${{needs.check-app-deployed.outputs.not-found == 'true'}}
+    steps: 
+    - uses: actions/checkout@v2
+    - name: Get Version
+      id: get-version
+      run: echo "::set-output name=version::$(cat version)"
+    - name: Deploy the app from the catalog
+      uses: napptive-actions/catalog-deploy-action@v2.4.1
+      with:
+        appName: napptive/example-app-nodejs:${{ steps.get-version.outputs.version }}
+        environment: ${{needs.create-prod-env.outputs.envname}}
+  update-app:
+    name: Update application
+    needs: [create-prod-env, check-app-deployed]
+    runs-on: ubuntu-latest
+    if: ${{needs.check-app-deployed.outputs.found == 'true'}}
+    steps:     
+    - uses: actions/checkout@v2
+    - name: Make scripts executable
+      run: chmod +x updateImage.sh
+    - name: Get Version
+      id: version
+      run: echo "::set-output name=version::$(cat version)"
+    - name: Deploy new version of the application
+      run: ./updateImage.sh
+      env:
+        VERSION: ${{ steps.version.outputs.version }}
+        ENV_NAME: ${{needs.create-prod-env.outputs.envname}}

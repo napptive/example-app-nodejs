@@ -1,0 +1,4 @@
+# Directory with binary and compile resources
+build/
+
+node_modules/

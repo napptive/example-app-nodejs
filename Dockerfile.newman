@@ -1,0 +1,10 @@
+FROM postman/newman:5-alpine
+
+# Acceptance test directory
+WORKDIR /at
+
+COPY acceptance.postman.json .
+COPY launchAT.sh .
+RUN chmod +x launchAT.sh
+
+ENTRYPOINT ["./launchAT.sh"]

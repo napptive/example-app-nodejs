@@ -1,0 +1,31 @@
+apiVersion: core.oam.dev/v1alpha2
+kind: Component
+metadata:
+  name: todo-api-at
+spec:
+  workload:
+    apiVersion: core.oam.dev/v1alpha2
+    kind: ContainerizedWorkload
+    metadata:
+      name: todo-api-at
+    spec:
+      osType: linux
+      containers:
+        - name: at-runner
+          securityContext:
+            runAsUser: 1001
+          image: TARGET_DOCKER_REGISTRY/example-app-nodejs-api-at-runner:VERSION
+          imagePullPolicy: Always
+          resources:
+            cpu:
+              required: 150m
+            memory:
+              required: 256Mi
+          env:
+            - name: TARGET_HOST
+              value: ""
+  parameters:
+    - name: target
+      required: true
+      fieldPaths:
+        - "spec.containers[0].env[0].value"

@@ -1,0 +1,16 @@
+flowchart LR
+    subgraph Build
+        build(Build)-->upload-docker-revision(Push docker images)
+        upload-docker-revision-->upload-app-def-revision(Push apps to the NAPPTIVE catalog)
+    end
+    subgraph Acceptance Test
+        upload-app-def-revision-->prepare-acceptance-test-env(Prepare AT environment)
+        prepare-acceptance-test-env-->launch-acceptance-tests(Launch acceptance tests)
+        launch-acceptance-tests-->cleanup-acceptance-test-env(Cleanup AT environment)
+    end
+    subgraph Continuous Deployment
+        launch-acceptance-tests-- success -->create-prod-env(Create production environment)
+        create-prod-env-->check-app-deployed{{Check if the app is already deployed}}
+        check-app-deployed-- Not deployed -->deploy-app(Deploy application)
+        check-app-deployed-- Already exists -->update-app(Update application)
+    end
