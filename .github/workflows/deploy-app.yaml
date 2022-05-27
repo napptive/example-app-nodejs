@@ -6,7 +6,7 @@ on: workflow_dispatch
 #  push:
 #    branches: [main]
 env:
-  PLAYGROUND_PAT: ${{ secrets.PLAYGROUND_PRODUCTION_PAT}} #TODO: Store your PAT in this secret, or point to the correct one if it has a different name.
+  PLAYGROUND_PAT: ${{ secrets.PLAYGROUND_PAT}} #TODO: Store your PAT in this secret, or point to the correct one if it has a different name.
   TARGET_DOCKER_REGISTRY: napptive #TODO: This should be your docker hub account.
   PLAYGROUND_ACCOUNT_NAME: dhiguero #TODO: This should be your NAPPTIVE username.
 jobs:

@@ -53,7 +53,7 @@ Finally, if the test are successfull, we create the production environment `<pla
 
 ## How to run this example
 
-**Before you start**: The following instructions work without changes on the PRO and higher subscription levels. If you are using a FREE account, follow the [extra instructions](./extra_instructions.md) to setup the pipeline. I you want to try the PRO account for FREE, use code **"KICKASSDEV"** during the [subscription process](https://docs.napptive.com/Subscription.html#using-discount-coupon) and you will get 12 months for free.
+**Before you start**: The following instructions work without changes on the PRO and higher subscription levels. If you are using a FREE account, follow the [extra instructions](./extra_instructions.md) to setup the pipeline. If you want to try the PRO subscription, create an account using [this link](https://playground.napptive.dev/login?&campaign_source=github) if needed, and use code **"KICKASSDEV"** during the [subscription process](https://docs.napptive.com/Subscription.html#using-discount-coupon) to get 12 months for free.
 
 1. Navigate to [https://github.com/napptive/example-app-nodejs](https://github.com/napptive/example-app-nodejs) and fork the example to your own repository by clicking on the `Fork` icon on the top right of the GitHub page.
 2. Generate a [Personal Access Token](https://docs.napptive.com/guides/04.5.Using_personal_access_tokens.html) and save the results in a secret called `PLAYGROUND_PAT`. Make sure the repository can access the value of the secret in case you are using an organization one. If you don't have a playground account, [get started for free](https://playground.napptive.dev) by signing up with your GitHub account.
