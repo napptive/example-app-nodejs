@@ -21,9 +21,9 @@ endif
 DOCKERCMD?=docker
 
 # Tools
-NPM_CMD=ng
-NPM_BUILD=$(NG_CMD) build
-NPM_TEST=$(NG_CMD) test
+NPM_CMD=npm
+NPM_BUILD=$(NPM_CMD) build
+NPM_TEST=$(NPM_CMD) test
 
 .PHONY: clean
 # Remove build files
