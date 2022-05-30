@@ -38,5 +38,5 @@ IMAGE="${TARGET_DOCKER_REGISTRY}/example-app-nodejs-api:${VERSION}"
 echo "Update image... ${IMAGE}"
 PATCH_DEPLOY="{\"spec\":{\"template\":{\"spec\":{\"containers\": [{\"name\":\"nodejs-api\", \"imagePullPolicy\":\"Always\"}]}}}}"
 kubectl --kubeconfig ./napptive/default/napptive-kubeconfig patch deployments.apps nodejs-api -p "${PATCH_DEPLOY}" --type=strategic
-PATCH="{\"spec\":{\"workload\":{\"spec\":{\"containers\": [{\"name\":\"nodejs-api\", \"image\":\"${IMAGE}\", \"imagePullPolicy\":\"Always\"}]}}}}"
+PATCH="{\"spec\":{\"workload\":{\"spec\":{\"containers\": [{\"name\":\"nodejs-api\", \"image\":\"${IMAGE}\"}]}}}}"
 kubectl --kubeconfig ./napptive/default/napptive-kubeconfig patch component nodejs-api -p "${PATCH}" --type=merge
