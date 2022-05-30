@@ -34,6 +34,9 @@ playground env use ${ENV_NAME}
 
 echo "Forcing rolling update to download newest image"
 IMAGE="${TARGET_DOCKER_REGISTRY}/example-app-nodejs-api:${VERSION}"
+# imagePullPolicy needs to be changed to Always, as by default it is not supported by the workload definition. Next release will have support for this.
 echo "Update image... ${IMAGE}"
-PATCH="{\"spec\":{\"workload\":{\"spec\":{\"containers\": [{\"name\":\"nodejs-api\", \"image\":\"${IMAGE}\"}]}}}}"
+PATCH_DEPLOY="{\"spec\":{\"template\":{\"spec\":{\"containers\": [{\"name\":\"nodejs-api\", \"imagePullPolicy\":\"Always\"}]}}}}"
+kubectl --kubeconfig ./napptive/default/napptive-kubeconfig patch deployments.apps nodejs-api -p "${PATCH_DEPLOY}" --type=strategic
+PATCH="{\"spec\":{\"workload\":{\"spec\":{\"containers\": [{\"name\":\"nodejs-api\", \"image\":\"${IMAGE}\", \"imagePullPolicy\":\"Always\"}]}}}}"
 kubectl --kubeconfig ./napptive/default/napptive-kubeconfig patch component nodejs-api -p "${PATCH}" --type=merge

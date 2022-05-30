@@ -15,7 +15,6 @@ spec:
           securityContext:
             runAsUser: 1001
           image: TARGET_DOCKER_REGISTRY/example-app-nodejs-api:VERSION
-          imagePullPolicy: Always
           resources:
             cpu:
               required: 150m
