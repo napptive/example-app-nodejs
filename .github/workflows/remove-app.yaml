@@ -21,10 +21,8 @@ jobs:
       with:
         cmd: "apps remove example-app-nodejs"
         environment: ${{steps.envname.outputs.envname}}
-        playgroundConfigFile: ./config/playground.yaml
     - name: Delete production environment
       uses: napptive-actions/playground-github-action@v2.4.1
       continue-on-error: true
       with:
         cmd: "env delete ${{steps.envname.outputs.envname }}" 
-        playgroundConfigFile: ./config/playground.yaml
