@@ -38,7 +38,7 @@ app.all('*', (req, res, next) => {
 
 // Change this line to easily check that the running application has changed.
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Hello World webinar!')
 })
 
 app.use('/healthz', healthRoute);
