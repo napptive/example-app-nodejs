@@ -45,14 +45,14 @@ jobs:
       id: version
       run: echo "::set-output name=version::$(cat version)"
     - name: Push the application to the catalog
-      uses: napptive-actions/catalog-push-action@v2.4.1
+      uses: napptive-actions/catalog-push-action@v3.0.1
       with:
         applicationPath: ./build/k8s/todoapp
         namespace: "napptive"
         applicationName: "example-app-nodejs"
         tag: ${{ steps.version.outputs.version }}
     - name: Push the acceptance test runner to the catalog
-      uses: napptive-actions/catalog-push-action@v2.4.1
+      uses: napptive-actions/catalog-push-action@v3.0.1
       with:
         applicationPath: ./build/k8s/todoat
         namespace: "napptive"
@@ -73,7 +73,7 @@ jobs:
       id: envname
       run: echo "::set-output name=envname::${PLAYGROUND_ACCOUNT_NAME}/todo-at-${GITHUB_RUN_ID}"
     - name: Create test environment
-      uses: napptive-actions/playground-github-action@v2.4.1
+      uses: napptive-actions/playground-github-action@v3.0.1
       with:
         cmd: "env create ${{steps.envname.outputs.envname }}" 
   launch-acceptance-tests:
@@ -86,22 +86,22 @@ jobs:
       id: get-version
       run: echo "::set-output name=version::$(cat version)"
     - name: Deploy the TODO app from the catalog
-      uses: napptive-actions/catalog-deploy-action@v2.4.1
+      uses: napptive-actions/catalog-deploy-action@v3.0.1
       with:
         appName: napptive/example-app-nodejs:${{ steps.get-version.outputs.version }}
         environment: ${{needs.prepare-acceptance-test-env.outputs.envname}}
     - name: Wait for TODO app
-      uses: napptive-actions/playground-github-action@v2.4.1
+      uses: napptive-actions/playground-github-action@v3.0.1
       with:
         cmd: "apps wait example-app-nodejs"
         environment: ${{needs.prepare-acceptance-test-env.outputs.envname}}
     - name: Deploy the TODO app AT runner from the catalog
-      uses: napptive-actions/catalog-deploy-action@v2.4.1
+      uses: napptive-actions/catalog-deploy-action@v3.0.1
       with:
         appName: napptive/example-app-nodejs-at:${{ steps.get-version.outputs.version }}
         environment: ${{needs.prepare-acceptance-test-env.outputs.envname}}
     - name: Wait for the test runner
-      uses: napptive-actions/playground-github-action@v2.4.1
+      uses: napptive-actions/playground-github-action@v3.0.1
       continue-on-error: true
       id: wait-at
       with:
@@ -123,19 +123,19 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Remove todo app
-      uses: napptive-actions/playground-github-action@v2.4.1
+      uses: napptive-actions/playground-github-action@v3.0.1
       continue-on-error: true
       with:
         cmd: "apps remove example-app-nodejs"
         environment: ${{needs.prepare-acceptance-test-env.outputs.envname}}
     - name: Remove AT app
-      uses: napptive-actions/playground-github-action@v2.4.1
+      uses: napptive-actions/playground-github-action@v3.0.1
       continue-on-error: true
       with:
         cmd: "apps remove example-app-nodejs-at"
         environment: ${{needs.prepare-acceptance-test-env.outputs.envname}}
     - name: Cleanup test environment
-      uses: napptive-actions/playground-github-action@v2.4.1
+      uses: napptive-actions/playground-github-action@v3.0.1
       continue-on-error: true
       with:
         cmd: "env remove ${{needs.prepare-acceptance-test-env.outputs.envname}}" 
@@ -151,7 +151,7 @@ jobs:
       id: envname
       run: echo "::set-output name=envname::${PLAYGROUND_ACCOUNT_NAME}/todo-app-prod"
     - name: Create production environment
-      uses: napptive-actions/playground-github-action@v2.4.1
+      uses: napptive-actions/playground-github-action@v3.0.1
       continue-on-error: true
       with:
         cmd: "env create ${{steps.envname.outputs.envname }}" 
@@ -165,7 +165,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Check if the app exists        
-      uses: napptive-actions/playground-github-action@v2.4.1
+      uses: napptive-actions/playground-github-action@v3.0.1
       continue-on-error: true
       id: check
       with:
@@ -190,7 +190,7 @@ jobs:
       id: get-version
       run: echo "::set-output name=version::$(cat version)"
     - name: Deploy the app from the catalog
-      uses: napptive-actions/catalog-deploy-action@v2.4.1
+      uses: napptive-actions/catalog-deploy-action@v3.0.1
       with:
         appName: napptive/example-app-nodejs:${{ steps.get-version.outputs.version }}
         environment: ${{needs.create-prod-env.outputs.envname}}

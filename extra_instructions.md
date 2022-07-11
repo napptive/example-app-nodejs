@@ -9,7 +9,7 @@ The free account is configured with a default environment whose quota matches th
 
 ```yaml
     - name: Create test environment
-      uses: napptive-actions/playground-github-action@v2.4.1
+      uses: napptive-actions/playground-github-action@v3.0.1
       with:
         cmd: "env create ${{steps.envname.outputs.envname }} --cpu=0.3 --ram=1G" 
         playgroundConfigFile: ./config/playground.yaml
@@ -17,7 +17,7 @@ The free account is configured with a default environment whose quota matches th
 
 ```yaml
     - name: Create production environment
-      uses: napptive-actions/playground-github-action@v2.4.1
+      uses: napptive-actions/playground-github-action@v3.0.1
       continue-on-error: true
       with:
         cmd: "env create ${{steps.envname.outputs.envname }} --cpu=0.3 --ram=1G" 
