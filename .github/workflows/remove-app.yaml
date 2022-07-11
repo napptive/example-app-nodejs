@@ -16,13 +16,13 @@ jobs:
       id: envname
       run: echo "::set-output name=envname::${PLAYGROUND_ACCOUNT_NAME}/todo-app-prod"
     - name: Remove todo app
-      uses: napptive-actions/playground-github-action@v2.4.1
+      uses: napptive-actions/playground-github-action@v3.0.1
       continue-on-error: true
       with:
         cmd: "apps remove example-app-nodejs"
         environment: ${{steps.envname.outputs.envname}}
     - name: Delete production environment
-      uses: napptive-actions/playground-github-action@v2.4.1
+      uses: napptive-actions/playground-github-action@v3.0.1
       continue-on-error: true
       with:
         cmd: "env delete ${{steps.envname.outputs.envname }}" 
