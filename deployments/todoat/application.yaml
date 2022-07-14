@@ -1,0 +1,19 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: example-app-nodejs-at
+  annotations:
+    version: 0.0.1
+    description: "Acceptance Test runner for the example-app-nodejs-at"
+spec:
+  components:
+    - name: todo-api-at
+      type: webservice
+      properties:
+        image: TARGET_DOCKER_REGISTRY/example-app-nodejs-api-at-runner:VERSION
+        imagePullPolicy: Always
+        cpu: "150m" 
+        memory: 256Mi
+        env:
+        - name: TARGET_HOST
+          value: "nodejs-api"

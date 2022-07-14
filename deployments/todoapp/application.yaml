@@ -1,0 +1,24 @@
+apiVersion: core.oam.dev/v1beta1
+kind: Application
+metadata:
+  name: example-app-nodejs
+  annotations:
+    version: 0.0.1
+    description: "A simple application to illustrate CI/CD pipelines with the NAPPTIVE Playground"
+spec:
+  components:
+    - name: nodejs-api
+      type: webservice
+      properties:
+        image: TARGET_DOCKER_REGISTRY/example-app-nodejs-api:VERSION
+        cpu: "150m" 
+        memory: 256Mi
+        ports:
+          - port: 8080
+            expose: true
+      traits:
+        - type: napptive-ingress         
+          properties:
+            name: nodejs-api
+            port: 8080
+            path: /

@@ -1,6 +1,6 @@
 # Example App with NodeJS
 
-Example application to illustrate different CI/CD integrations with the Napptive Platform. 
+Example application to illustrate different CI/CD integrations with the Napptive Platform.
 
 Visit the [documentation](https://github.com/napptive/example-app-nodejs) for more information.
 
@@ -8,7 +8,7 @@ Visit the [documentation](https://github.com/napptive/example-app-nodejs) for mo
 
 The following REST endpoints are provided:
 
-```
+```bash
 GET /healthz
 GET /todos
 POST /todos/add?item=<text>
@@ -16,7 +16,7 @@ POST /todos/done?id=<item_identifier>
 POST /todos/remove?id=<item_identifier>
 ```
 
-The /healthz endpoint returns 200 OK on every call, and can be used to illustrate how to setup status monitoring hooks. The other endpoints provide a list of all items (`/todos`), an endpoint to add a new item (`/todos/add`), another to mark an item as done (`/todos/done`), and finally an endpoint to remove a single item from the list (`/todos/remove`).
+The /healthz endpoint returns 200 OK on every call, and can be used to illustrate how to set up status monitoring hooks. The other endpoints provide a list of all items (`/todos`), an endpoint to add a new item (`/todos/add`), another to mark an item as done (`/todos/done`), and finally, an endpoint to remove a single item from the list (`/todos/remove`).
 
 ## License
 

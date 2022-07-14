@@ -47,13 +47,13 @@ flowchart LR
 
 First, the pipeline builds the code and run unit test agains the [todo.js](todo/todos.js) implementation of the in-memory list, and integration tests against the [api.js](routes/api.js) endpoints. After that, the docker images are generated generated and uploaded to `<target_docker_registry>/example-app-nodejs-api:<version>` and `<target_docker_registry>/example-app-nodejs-api-at-runner:<version>`. In the same way, the application definition is uploaded to the NAPPTIVE catalog storing the application as `<playground_account_name>/example-app-nodejs:<version>` and `<playground_account_name>/example-app-nodejs-at:<version>` respectively.
 
-Once the docker image is build and the revision is available on the catalog, the acceptance test phase starts. For that, the pipeline creates a new fresh environment named `<playground_account_name>/todo-at-<GITHUB_RUN_ID>`. The application and the acceptance test runner is launched, and the job waits for the runner to retrieve the results. The acceptance test environment is then removed as it will not longer be used.
+Once the docker image is built and the revision is available on the catalog, the acceptance test phase starts. For that, the pipeline creates a new fresh environment named `<playground_account_name>/todo-at-<GITHUB_RUN_ID>`. The application and the acceptance test runner are launched, and the job waits for the runner to retrieve the results. The acceptance test environment is then removed as it will no longer be used.
 
-Finally, if the test are successfull, we create the production environment `<playground_account_name>/todo-app-prod` and check if the application is already deployed. If if does not exists, we deploy the application from the catalog. Otherwise, we patch the component version to use the new version.
+Finally, if the tests are successful, we create the production environment `<playground_account_name>/todo-app-prod` and check if the application is already deployed. If it does not exists, we deploy the application from the catalog. Otherwise, we patch the component version to use the new version.
 
 ## How to run this example
 
-**Before you start**: The following instructions work without changes on the PRO and higher subscription levels. If you are using a FREE account, follow the [extra instructions](./extra_instructions.md) to setup the pipeline. If you want to try the PRO subscription, create an account using [this link](https://playground.napptive.dev/login?&campaign_source=github) if needed, and use code **"KICKASSDEV"** during the [subscription process](https://docs.napptive.com/Subscription.html#using-discount-coupon) to get 12 months for free.
+**Before you start**: The following instructions work without changes on the PRO and higher subscription levels. If you are using a FREE account, follow the [extra instructions](./extra_instructions.md) to set up the pipeline. If you want to try the PRO subscription, create an account using [this link](https://playground.napptive.dev/login?&campaign_source=github) if needed, and use code **"KICKASSDEV"** during the [subscription process](https://docs.napptive.com/Subscription.html#using-discount-coupon) to get 12 months for free.
 
 1. Navigate to [https://github.com/napptive/example-app-nodejs](https://github.com/napptive/example-app-nodejs) and fork the example to your own repository by clicking on the `Fork` icon on the top right of the GitHub page.
 2. Generate a [Personal Access Token](https://docs.napptive.com/guides/04.5.Using_personal_access_tokens.html) and save the results in a secret called `PLAYGROUND_PAT`. Make sure the repository can access the value of the secret in case you are using an organization one. If you don't have a playground account, [get started for free](https://playground.napptive.dev) by signing up with your GitHub account.
@@ -61,7 +61,7 @@ Finally, if the test are successfull, we create the production environment `<pla
 4. Edit [.github/workflows/deploy-app.yml](.github/workflows/deploy-app.yml) and modify the value of `TARGET_DOCKER_REGISTRY` with your docker username.
 5. Commit your changes to your repository, accept the PR if you are using this approach, and check the triggered action.
 
-Once the action has been executed, you can connect to the [NAPPTIVE Playground](https://playground.napptive.dev) and you will see your application running. First select the `todo-app-prod` environment on the top left selector, and click on the `example-app-nodejs` application. After that, expand the application and click on the endpoint link to recieve the welcome message.
+Once the action has been executed, you can connect to the [NAPPTIVE Playground](https://playground.napptive.dev) and you will see your application running. First, select the `todo-app-prod` environment on the top left selector, and click on the `example-app-nodejs` application. After that, expand the application and click on the endpoint link to receive the welcome message.
 
 Alternatively, you can open the application endpoint with the CLI by executing:
 
