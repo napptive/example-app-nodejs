@@ -49,7 +49,7 @@ First, the pipeline builds the code and run unit test agains the [todo.js](todo/
 
 Once the docker image is built and the revision is available on the catalog, the acceptance test phase starts. For that, the pipeline creates a new fresh environment named `<playground_account_name>/todo-at-<GITHUB_RUN_ID>`. The application and the acceptance test runner are launched, and the job waits for the runner to retrieve the results. The acceptance test environment is then removed as it will no longer be used.
 
-Finally, if the test is successful, we create the production environment `<playground_account_name>/todo-app-prod` and check if the application is already deployed. If it does not exists, we deploy the application from the catalog. Otherwise, we patch the component version to use the new version.
+Finally, if the tests are successful, we create the production environment `<playground_account_name>/todo-app-prod` and check if the application is already deployed. If it does not exists, we deploy the application from the catalog. Otherwise, we patch the component version to use the new version.
 
 ## How to run this example
 
